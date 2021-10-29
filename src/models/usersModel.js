@@ -16,7 +16,7 @@ const users = new mongoose.Schema({
   username: { type: String, required: true, unique: true },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
-  favoriteMovie: [favoriteMovieSchema],
+  favoriteMovies: [favoriteMovieSchema],
   role: {
     type: String,
     required: true,
@@ -36,7 +36,7 @@ users.virtual('token').get(function () {
 // get capabilities for the user depending on his role
 users.virtual('capabilities').get(function () {
   let acl = {
-    user: ['read'],
+    user: ['read', 'create', 'update', 'delete'],
     writer: ['read', 'create'],
     editor: ['read', 'create', 'update'],
     admin: ['read', 'create', 'update', 'delete'],
@@ -52,8 +52,8 @@ users.pre('save', async function () {
 });
 
 // create static method for basic authentication
-users.statics.authenticateBasic = async function (username, password) {
-  const user = await this.findOne({ username });
+users.statics.authenticateBasic = async function (email, password) {
+  const user = await this.findOne({ email });
   const valid = await bcrypt.compare(password, user.password);
   if (valid) {
     return user;

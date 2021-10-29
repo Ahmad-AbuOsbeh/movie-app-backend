@@ -15,7 +15,6 @@ const favoriteMovieSchema = new Schema({
   voteCount: String,
   popularity: String,
   cover: String,
-  feedback: { type: String, default: 'test' },
 });
 
 module.exports = favoriteMovieSchema;
