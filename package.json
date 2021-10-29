@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/Ahmad-AbuOsbeh/talkversity-backend#readme",
   "dependencies": {
+    "axios": "^0.24.0",
     "base-64": "^1.0.0",
     "bcrypt": "^5.0.1",
     "cors": "^2.8.5",
