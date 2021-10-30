@@ -16,6 +16,7 @@ const users = new mongoose.Schema({
   username: { type: String, required: true, unique: true },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
+  verified: { type: String, default: false },
   favoriteMovies: [favoriteMovieSchema],
   role: {
     type: String,
@@ -64,14 +65,16 @@ users.statics.authenticateBasic = async function (email, password) {
 // create static method for bearer authentication
 users.statics.authenticateWithToken = async function (token) {
   try {
+    console.log('befor verify');
     const parsedToken = jwt.verify(token, SECRET);
+    console.log('parsedToken', parsedToken);
     const user = this.findOne({ username: parsedToken.username });
     if (user) {
       return user;
     }
     throw new Error('User Not Found');
   } catch (e) {
-    throw new Error(e.message);
+    throw new Error(e);
   }
 };
 

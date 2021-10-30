@@ -30,34 +30,45 @@ router.post('/favourite', bearerAuth, permissions('create'), handleAddToFav);
 router.delete('/favourite/:id', bearerAuth, permissions('delete'), handleDeleteFromFav);
 
 // get all favourites handler
-async function handleGetFav(req, res) {
-  let id = req.user._id;
-  let allRecords = await interfaceDB.get(id);
-  res.status(200).send(allRecords);
+async function handleGetFav(req, res, next) {
+  try {
+    let id = req.user._id;
+    let allRecords = await interfaceDB.get(id);
+    res.status(200).send(allRecords);
+  } catch (error) {
+    next('get favourites error', error.message);
+  }
 }
 
-// create Favourt handler
-async function handleAddToFav(req, res) {
+// add Favourt handler
+async function handleAddToFav(req, res, next) {
   let id = req.user._id;
   let obj = req.body;
-  let userData = await interfaceDB.get(id);
 
-  userData.favoriteMovies.push(obj);
-  userData.save();
-  res.status(201).send(userData);
+  try {
+    let userData = await interfaceDB.get(id);
+    userData.favoriteMovies.push(obj);
+    await userData.save();
+    res.status(201).send(userData);
+  } catch (error) {
+    next('add favourite error', error.message);
+  }
 }
 
 // delete Favourt handler
-async function handleDeleteFromFav(req, res) {
+async function handleDeleteFromFav(req, res, next) {
   const userId = req.user._id;
   const { id } = req.params;
-  console.log('id', id);
-  let userData = await interfaceDB.get(userId);
-  const updatedFavourite = userData.favoriteMovies.filter((item) => item._id != id);
-  userData.favoriteMovies = updatedFavourite;
-  userData.save();
+  try {
+    let userData = await interfaceDB.get(userId);
+    const updatedFavourite = userData.favoriteMovies.filter((item) => item._id != id);
+    userData.favoriteMovies = updatedFavourite;
+    await userData.save();
 
-  res.status(200).send(userData);
+    res.status(200).send(userData);
+  } catch (error) {
+    next('delete favourite error', error.message);
+  }
 }
 
 module.exports = router;
